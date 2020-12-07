@@ -1,2 +1,5 @@
 # pyper-qtify
-PyQt5 small projects
+Python GUI Projects using PyQt5
+
+- [ ] Handwriting Detection
+- [ ] Devil Dictionary
