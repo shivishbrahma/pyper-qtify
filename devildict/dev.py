@@ -41,14 +41,18 @@ class AddWordForm(QDialog):
 
     def createAddWordForm(self):
         self.formGroupBox = QGroupBox("Add Word")
-        self.nameText = QLineEdit()
 
+        self.nameText = QLineEdit()
+        self.nameText.setPlaceholderText("Enter the word...")
         self.posCombo = QComboBox()
         for pos in self.posList:
             self.posCombo.addItem(pos)
 
         self.meanText = QTextEdit()
+        self.meanText.setPlaceholderText("Enter the meaning...")
         self.exText = QTextEdit()
+        self.exText.setPlaceholderText("Enter the example...")
+
         layout = QFormLayout()
         layout.addRow(QLabel("Name: "), self.nameText)
         layout.addRow(QLabel("POS: "), self.posCombo)
@@ -110,6 +114,7 @@ class FindWordForm(QDialog):
     def createFindWordForm(self):
         self.formGroupBox = QGroupBox("Find Word")
         self.searchText = QLineEdit()
+        self.searchText.setPlaceholderText("Enter the search term...")
 
         layout = QFormLayout()
         layout.addRow(QLabel("Search term"))
@@ -155,12 +160,14 @@ class ViewWidget(QDialog):
 
     def createViewWordForm(self):
         self.formGroupBox = QGroupBox("View Word")
-        self.nameLabel = QLabel()
-        self.posLabel = QLabel()
+        self.nameLabel = QLineEdit()
+        self.nameLabel.setReadOnly(True)
+        self.posLabel = QLineEdit()
+        self.posLabel.setReadOnly(True)
         self.meanLabel = QTextEdit()
-        self.meanLabel.setEnabled(False)
+        self.meanLabel.setReadOnly(True)
         self.exLabel = QTextEdit()
-        self.exLabel.setEnabled(False)
+        self.exLabel.setReadOnly(True)
         layout = QFormLayout()
         layout.addRow(QLabel("Name: "), self.nameLabel)
         layout.addRow(QLabel("POS: "), self.posLabel)
@@ -183,7 +190,7 @@ class ViewWidget(QDialog):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
 
-class DDApp(QWidget):
+class DDDevApp(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -335,6 +342,7 @@ class DDApp(QWidget):
         self.dataTable.setColumnWidth(1, 100)
         # self.dataTable.resizeRowsToContents()
         self.dataTable.setColumnHidden(4, True)
+        # Set headers for table
         self.dataTable.setHorizontalHeaderLabels(
             ["Name", "POS", "Meaning", "Example", "ID"])
 
@@ -363,6 +371,7 @@ class DDApp(QWidget):
         self.createWordTable(self.database.searchWord())
 
         self.searchText = QLineEdit()
+        self.searchText.setPlaceholderText("Enter the search term...")
         self.searchText.setFixedWidth(400)
         self.searchText.textChanged.connect(self.searchTextOnChange)
 
@@ -390,8 +399,7 @@ class DDApp(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    dd = DDApp()
+    dd = DDDevApp()
     if(app.exec_()):
         dd.database.closeDB()
         sys.exit()
-    # sys.exit(app.exec_())
