@@ -96,7 +96,9 @@ class AlDiRecogApp(QWidget):
 
         self.last_x, self.last_y = None, None
 
-        self.resultPanel = QLabel("Hello World!")
+        self.resultPanel = QLabel("**Welcome to the Alpha Digit !**")
+        self.resultPanel.setTextFormat(Qt.MarkdownText)
+        self.resultPanel.setAlignment(Qt.AlignCenter)
 
         row1.addWidget(self.resultPanel)
         row1.addWidget(self.drawingCanvas)
@@ -122,6 +124,7 @@ class AlDiRecogApp(QWidget):
 
     def clearCanvas(self):
         self.drawingCanvas.clearCanvas()
+        self.resultPanel.setText("**Welcome to the Alpha Digit !**")
 
     def recogniseCanvas(self):
         qImage = self.drawingCanvas.pixmap().toImage()
@@ -131,7 +134,12 @@ class AlDiRecogApp(QWidget):
         pImage = Image.open(io.BytesIO(qBuffer.data()))
         # filename = time.strftime("img%Y%m%d%H%M%S.png")
         # pImage.save(filename)
-        # self.model.recogniseImage(pImage)
+        self.resultPanel.setText("Finding....")
+        data = self.model.recogniseImage(pImage)
+        time.sleep(1)
+        self.resultPanel.setText(
+            f"**Result:**\n\n{data['label_id']} ({round(data['prob']*100,3)}%)"
+        )
 
 
 if __name__ == '__main__':

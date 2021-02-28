@@ -1,11 +1,12 @@
 from PIL import Image
 import numpy as np
 import tflite_runtime.interpreter as tflite
+import matplotlib.pyplot as plt
 
 
 class AlDiModel():
     def __init__(self, filename) -> None:
-        self.model = filename
+        self.filename = filename
 
         self.interpreter = tflite.Interpreter(model_path=filename)
         self.interpreter.allocate_tensors()
@@ -46,14 +47,20 @@ class AlDiModel():
         ordered = np.argpartition(-output, top_k)
         return [(i, output[i]) for i in ordered[:top_k]]
 
-    def recogniseImage(self, image):
-        resized_image = image.convert('L')
-        resized_image = np.array(resized_image) / 255
+    def recogniseImage(self, image) -> dict:
+        resized_image = image.resize((self.width, self.height),
+                                     Image.ANTIALIAS).convert('L')
+
+        labels = [str(i) for i in range(10)]
+        labels.extend([chr(i) for i in range(65, 91)])
+
+        resized_image = (255 - np.array(resized_image)) / 255
         resized_image = resized_image.reshape(-1, self.width, self.height, 1)
-        resized_image = Image.fromarray(resized_image)
-        # print(self.width, self.height)
+
         results = self.classify_image(image=resized_image)
 
-        label_id, prob = results[0]
+        data = {}
+        data['label_id'], data['prob'] = results[0]
+        data['label_id'] = labels[data['label_id']]
 
-        print(label_id, prob)
+        return data
