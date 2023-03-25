@@ -1,26 +1,13 @@
 import sys
-from PyQt5.QtWidgets import (
-    QWidget, QApplication, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QTextEdit)
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
-import db
 import markdown
 
-
-class WordListItem(QListWidgetItem):
-    def __init__(self, word, parent=None):
-        super().__init__(word[1], parent)
-        (id, name, pos, meaning, example) = word
-        self.id = id
-        self.name = name
-        self.pos = pos
-        self.meaning = meaning
-        self.example = example
+import db
+from components.list_items import WordListItem
 
 
-class DDApp(QWidget):
-
+class DDApp(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.title = "Devil's Dictionary"
@@ -40,6 +27,9 @@ class DDApp(QWidget):
         c = 0
         for word in data:
             item = WordListItem(word, self.wordList)
+            # Selecting first item when list changes
+            if c == 0:
+                self.wordList.setCurrentItem(item)
             # self.wordList.addItem(item)
             c = c + 1
 
@@ -50,42 +40,52 @@ class DDApp(QWidget):
 
     def onChangeSelected(self):
         item = self.wordList.currentItem()
-        info = f'''
-        {markdown.markdown(f'**{item.name}**')}
-        {markdown.markdown(f'*{item.pos}*')}
-        {markdown.markdown(item.meaning)}
-        {markdown.markdown('**Examples**') if item.example.strip()!='' else ''}
-        {markdown.markdown(f"{item.example}")}
-        '''
-        self.wordInfo.setHtml(info)
+        # To avoid unselected
+        if item is not None:
+            info = f"""
+            {markdown.markdown(f'**{item.name}**')}
+            {markdown.markdown(f'*{item.pos}*')}
+            {markdown.markdown(item.meaning)}
+            {markdown.markdown('**Examples**') if item.example.strip()!='' else ''}
+            {markdown.markdown(f"{item.example}")}
+            """
+            self.wordInfo.setHtml(info)
+
+    def toCenter(self):
+        qr = self.frameGeometry()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def initUI(self):
         self.setWindowTitle(self.title)
+        self.setWindowIcon(QtGui.QIcon("assets/icon.jpg"))
         self.setGeometry(self.left, self.top, self.width, self.height)
+        self.toCenter()
 
-        self.searchText = QLineEdit()
+        self.searchText = QtWidgets.QLineEdit()
         self.searchText.setPlaceholderText("Enter the search term...")
         self.searchText.setFixedWidth(400)
         self.searchText.textChanged.connect(self.searchTextOnChange)
 
-        self.wordList = QListWidget()
+        self.wordList = QtWidgets.QListWidget()
         self.wordList.setMaximumWidth(270)
         self.createWordTable(self.database.searchWord())
         self.wordList.currentItemChanged.connect(self.onChangeSelected)
 
-        self.wordInfo = QTextEdit()
+        self.wordInfo = QtWidgets.QTextEdit()
         self.wordInfo.setFixedWidth(660)
         self.wordInfo.setReadOnly(True)
 
-        layout = QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
-        row1 = QHBoxLayout()
-        searchTermLabel = QLabel("Search term: ")
+        row1 = QtWidgets.QHBoxLayout()
+        searchTermLabel = QtWidgets.QLabel("Search term: ")
         searchTermLabel.setFixedWidth(300)
         row1.addWidget(searchTermLabel, 0, Qt.AlignRight)
         row1.addWidget(self.searchText, 0, Qt.AlignLeft)
 
-        row2 = QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
         row2.addWidget(self.wordList, 0, Qt.AlignLeft)
         row2.addWidget(self.wordInfo, 0, Qt.AlignRight)
 
@@ -97,8 +97,8 @@ class DDApp(QWidget):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dd = DDApp()
-    if(app.exec_()):
+    if app.exec_():
         dd.database.closeDB()
         sys.exit()
