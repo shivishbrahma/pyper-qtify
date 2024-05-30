@@ -1,6 +1,8 @@
 import sys
+import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
+
 from components.dialogs import ViewWidget
 from components.forms import AddWordForm, FindWordForm
 import db
@@ -15,7 +17,9 @@ class DDDevApp(QtWidgets.QWidget):
         self.width = 960
         self.height = 720
 
-        self.database = db.DictDB("dict.db")
+        # Get the location of the script
+        self.__dir__ = os.path.dirname(os.path.realpath(__file__))
+        self.database = db.DictDB(os.path.join(self.__dir__, "dict.db"))
         self.awfDialog = AddWordForm(self)
         self.fwfDialog = FindWordForm(self)
         self.vwfDialog = ViewWidget(self)
@@ -182,7 +186,7 @@ class DDDevApp(QtWidgets.QWidget):
 
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setWindowIcon(QtGui.QIcon("assets/icon.jpg"))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(self.__dir__, "assets/icon.jpg")))
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.toCenter()
 

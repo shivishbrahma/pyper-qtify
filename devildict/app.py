@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 import markdown
@@ -10,13 +11,15 @@ from components.list_items import WordListItem
 class DDApp(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.__dir__ = os.path.dirname(os.path.realpath(__file__))
         self.title = "Devil's Dictionary"
         self.left = 10
         self.top = 10
         self.width = 960
         self.height = 720
 
-        self.database = db.DictDB("dict.db")
+        # Get the location of the script
+        self.database = db.DictDB(os.path.join(self.__dir__, "dict.db"))
         self.initUI()
         self.wordList.setCurrentRow(0)
 
@@ -59,7 +62,7 @@ class DDApp(QtWidgets.QWidget):
 
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setWindowIcon(QtGui.QIcon("assets/icon.jpg"))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(self.__dir__, "assets/icon.jpg")))
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.toCenter()
 
