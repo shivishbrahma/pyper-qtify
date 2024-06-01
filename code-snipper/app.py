@@ -11,14 +11,18 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QSplitter,
     QTreeWidgetItem,
+    QToolBar,
+    QAction,
 )
 from PyQt5.QtCore import Qt
+import qtawesome as qta
 import os
+import json
 
 from db_manager import DBManager
-from folders import FolderModel
+from folders import FolderModel, load_folders, load_folders_ui
 from snippets import SnippetModel
-from tags import TagModel
+from tags import TagModel, load_tags_tree, load_tags_ui
 
 
 class SnippetTool(QMainWindow):
@@ -37,9 +41,14 @@ class SnippetTool(QMainWindow):
         self.__width = 960
         self.__height = 720
 
-        self.__current_folder_id = -1
+        self.load_theme("light-github")
 
         self.init_ui()
+
+    def load_theme(self, theme_name):
+        self.theme_name = theme_name
+        with open(os.path.join(self.__dir__, "themes", theme_name + ".json")) as f:
+            self.theme = json.load(f)
 
     def init_ui(self):
         self.setWindowTitle(self.__name)
@@ -57,30 +66,23 @@ class SnippetTool(QMainWindow):
         # Sidebar with folders and tags
         self.sidebar_widget = QWidget()
         self.sidebar_layout = QVBoxLayout(self.sidebar_widget)
+        self.sidebar_layout.setContentsMargins(0, 0, 0, 0)
         self.splitter.addWidget(self.sidebar_widget)
 
         # Folders Tree
-        self.folders_tree = QTreeWidget()
-        self.folders_tree.setHeaderLabel("Folders")
-        self.folders_tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.folders_tree.customContextMenuRequested.connect(self.show_folder_menu)
-        self.sidebar_layout.addWidget(self.folders_tree)
+        load_folders_ui(self)
 
         # Tags List
-        self.tags_label = QLabel("Tags")
-        self.sidebar_layout.addWidget(self.tags_label)
-
-        self.tags_list = QListWidget()
-        self.tags_list.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.tags_list.customContextMenuRequested.connect(self.show_tag_menu)
-        self.sidebar_layout.addWidget(self.tags_list)
+        load_tags_ui(self)
 
         # Snippets List
         self.snippets_widget = QWidget()
         self.snippets_layout = QVBoxLayout(self.snippets_widget)
+        self.snippets_layout.setContentsMargins(0, 0, 0, 0)
         self.splitter.addWidget(self.snippets_widget)
 
         self.snippets_label = QLabel("Snippets")
+        self.snippets_label.setFixedHeight(30)
         self.snippets_layout.addWidget(self.snippets_label)
         self.snippets_list = QListWidget()
         self.snippets_list.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -91,25 +93,38 @@ class SnippetTool(QMainWindow):
         self.snippet_editor = QTextEdit()
         self.splitter.addWidget(self.snippet_editor)
 
+        # Set splitter sizes (1:1:2)
+        self.splitter.setStretchFactor(0, 1)  # Sidebar (folders and tags)
+        self.splitter.setStretchFactor(1, 1)  # Snippets list
+        self.splitter.setStretchFactor(2, 2)  # Snippet editor
+
         # Load initial data
         self.load_initial_data()
 
-    def load_folders(self):
-        self.folders_tree.clear()
-        folders = self.folder_model.get_folders()
-        for folder in folders:
-            item = QTreeWidgetItem(self.folders_tree)
-            item.setText(0, folder[1])
-            item.setData(0, Qt.UserRole, folder[0])
+        # Apply theme
+        self.apply_theme()
 
-    def load_tags(self):
-        self.tags_list.clear()
-        tags = self.tag_crud.get_tags()
-        for tag in tags:
-            self.tags_list.addItem(tag[1])
+    # def create_toolbar(self):
+    #     toolbar = QToolBar("CRUD Actions")
+    #     self.addToolBar(toolbar)
+
+    #     # Create actions with qtawesome icons
+    #     add_folder_action = QAction(
+    #         qta.icon("mdi.plus", color="green"), "Add Folder", self
+    #     )
+    #     add_tag_action = QAction(qta.icon("fa.plus", color="blue"), "Add Tag", self)
+    #     add_snippet_action = QAction(
+    #         qta.icon("fa.plus", color="purple"), "Add Snippet", self
+    #     )
+    #     delete_action = QAction(qta.icon("fa.trash", color="red"), "Delete", self)
+
+    #     # Add actions to the toolbar
+    #     toolbar.addAction(add_folder_action)
+    #     toolbar.addAction(add_tag_action)
+    #     toolbar.addAction(add_snippet_action)
+    #     toolbar.addAction(delete_action)
 
     def load_snippets(self, item):
-        # folder_name = item.text()
         folder_id = item.data(0, Qt.UserRole)
         snippets = self.snippet_model.get_snippets(folder_id)
         self.snippets_list.clear()
@@ -117,8 +132,8 @@ class SnippetTool(QMainWindow):
             self.snippets_list.addItem(snippet[1])
 
     def load_initial_data(self):
-        self.load_folders()
-        self.load_tags()
+        load_folders(self)
+        load_tags_tree(self)
         # select current folder
         current_folder_item = self.folders_tree.currentItem()
         if current_folder_item:
@@ -131,10 +146,22 @@ class SnippetTool(QMainWindow):
     #     folders.show_folder_menu(self.folders_tree, position)
 
     # def show_tag_menu(self, position):
-    #     tags.show_tag_menu(self.tags_list, position)
+    #     tags.show_tag_menu(self.tags_tree, position)
 
     # def show_snippet_menu(self, position):
     #     snippets.show_snippet_menu(self.snippets_list, position)
+
+    def apply_theme(self):
+        # set background color
+        self.setStyleSheet(
+            f"background-color: {self.theme['colors']['background']}; color: {self.theme['colors']['text']};"
+        )
+
+        # Apply header styles
+        self.tags_label.setStyleSheet(
+            f"color: {self.theme['colors']['header']['foreground']};"
+        )
+        # self.header_toolbar.setStyleSheet(f"background-color: {self.theme['colors']['header']['background']}; border: 1px solid {self.theme['colors']['header']['border']};")
 
     def closeEvent(self, event):
         self.db_manager.close()

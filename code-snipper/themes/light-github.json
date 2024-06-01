@@ -1,0 +1,83 @@
+{
+    "name": "Light GitHub Theme",
+    "type": "light",
+    "colors": {
+        "foreground": "#24292e",
+        "background": "#ffffff",
+        "text": "#24292e",
+        "button": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e",
+            "hoverBackground": "#e1e4e8"
+        },
+        "toolbar": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e"
+        },
+        "header": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e",
+            "border": "#e1e4e8"
+        },
+        "sidebar": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e",
+            "border": "#e1e4e8"
+        },
+        "editor": {
+            "background": "#ffffff",
+            "foreground": "#24292e",
+            "border": "#e1e4e8"
+        },
+        "statusbar": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e",
+            "border": "#e1e4e8"
+        },
+        "hover": {
+            "background": "#f6f8fa",
+            "foreground": "#24292e",
+            "border": "#e1e4e8"
+        },
+        "selection": {
+            "background": "#0366d6",
+            "foreground": "#ffffff"
+        }
+    },
+    "styles": {
+        "headerLabel": {
+            "fontSize": "24px",
+            "fontWeight": "bold"
+        },
+        "defaultText": {
+            "fontSize": "14px"
+        },
+        "button": {
+            "fontSize": "14px",
+            "padding": "5px 10px",
+            "borderRadius": "5px",
+            "border": "1px solid #e1e4e8"
+        },
+        "toolbarButton": {
+            "fontSize": "14px",
+            "padding": "5px 10px",
+            "borderRadius": "5px"
+        },
+        "inputField": {
+            "fontSize": "14px",
+            "padding": "5px",
+            "borderRadius": "5px",
+            "border": "1px solid #e1e4e8",
+            "background": "#ffffff",
+            "foreground": "#24292e"
+        },
+        "link": {
+            "color": "#0366d6",
+            "textDecoration": "none"
+        },
+        "linkHover": {
+            "color": "#0366d6",
+            "textDecoration": "underline"
+        }
+    }
+}
