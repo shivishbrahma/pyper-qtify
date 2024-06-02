@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
     QAction,
 )
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 import qtawesome as qta
 import os
 import json
@@ -53,6 +54,8 @@ class SnippetTool(QMainWindow):
     def init_ui(self):
         self.setWindowTitle(self.__name)
         self.setGeometry(self.__left, self.__top, self.__width, self.__height)
+        icon = QIcon(os.path.join(self.__dir__, "assets/icons/icon-without-bg.png"))
+        self.setWindowIcon(icon)
 
         # Main layout
         self.main_widget = QWidget()
