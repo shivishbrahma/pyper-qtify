@@ -9,8 +9,9 @@ from PyQt5.QtWidgets import (
     QListWidget,
 )
 from PyQt5.QtCore import Qt
+from sqlalchemy import select
 
-from db_manager import DBManager
+from db_manager import DBManager, Tag
 
 
 class TagModel:
@@ -18,27 +19,22 @@ class TagModel:
         self.db_manager = db_manager
 
     def create_tag(self, name):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "INSERT INTO tags (name) VALUES (?)", (name,)
-            )
+        new_tag = Tag(name=name)
+        self.db_manager.session.add(new_tag)
+        self.db_manager.commit()
 
     def get_tags(self):
-        cursor = self.db_manager.connection.cursor()
-        cursor.execute("SELECT * FROM tags")
-        return cursor.fetchall()
+        return self.db_manager.session.query(Tag).all()
 
     def update_tag(self, tag_id, name):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "UPDATE tags SET name = ?, updated_ts = CURRENT_TIMESTAMP WHERE id = ?", (name, tag_id)
-            )
+        old_tag = self.db_manager.session.query(Tag).get(tag_id)
+        old_tag.name = name
+        self.db_manager.commit()
 
     def delete_tag(self, tag_id):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "DELETE FROM tags WHERE id = ?", (tag_id,)
-            )
+        old_tag = self.db_manager.session.query(Tag).get(tag_id)
+        self.db_manager.session.delete(old_tag)
+        self.db_manager.commit()
 
     def add_tag_to_snippet(self, snippet_id, tag_id):
         with self.db_manager.connection:
@@ -59,7 +55,7 @@ def load_tags_tree(app):
     app.tags_tree.clear()
     tags = app.tag_crud.get_tags()
     for tag in tags:
-        app.tags_tree.addItem(tag[1])
+        app.tags_tree.addItem(tag.name)
 
 
 def load_tags_ui(app):

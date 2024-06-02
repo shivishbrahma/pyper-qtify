@@ -1,4 +1,4 @@
-from db_manager import DBManager
+from sqlalchemy import select
 from PyQt5.QtWidgets import (
     QWidget,
     QTreeWidget,
@@ -9,10 +9,12 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QInputDialog,
     QMessageBox,
-    QMenu
+    QMenu,
 )
 from PyQt5.QtCore import Qt
 import qtawesome as qta
+
+from db_manager import DBManager, Folder
 
 
 class FolderModel:
@@ -20,27 +22,22 @@ class FolderModel:
         self.db_manager = db_manager
 
     def create_folder(self, name):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "INSERT INTO folders (name) VALUES (?)", (name,)
-            )
+        new_folder = Folder(name=name)
+        self.db_manager.session.add(new_folder)
+        self.db_manager.commit()
 
     def get_folders(self):
-        cursor = self.db_manager.connection.cursor()
-        cursor.execute("SELECT * FROM folders")
-        return cursor.fetchall()
+        return self.db_manager.session.query(Folder).all()
 
     def update_folder(self, folder_id, name):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "UPDATE folders SET name = ?, updated_ts = CURRENT_TIMESTAMP WHERE id = ?", (name, folder_id)
-            )
+        old_folder = self.db_manager.session.query(Folder).get(folder_id)
+        old_folder.name = name
+        self.db_manager.commit()
 
     def delete_folder(self, folder_id):
-        with self.db_manager.connection:
-            self.db_manager.connection.execute(
-                "DELETE FROM folders WHERE id = ?", (folder_id,)
-            )
+        old_folder = self.db_manager.session.query(Folder).get(folder_id)
+        self.db_manager.session.delete(old_folder)
+        self.db_manager.commit()
 
 
 def load_folders(app):
@@ -49,8 +46,8 @@ def load_folders(app):
     for folder in folders:
         item = QTreeWidgetItem(app.folders_tree)
         item.setIcon(0, qta.icon("mdi.folder"))
-        item.setText(0, folder[1])
-        item.setData(0, Qt.UserRole, folder[0])
+        item.setText(0, folder.name)
+        item.setData(0, Qt.UserRole, folder.id)
 
 
 def load_folders_ui(app):
@@ -131,6 +128,7 @@ def show_folder_menu(app):
         edit_folder_click(app)
     if action == delete_folder_action:
         delete_folder_click(app)
+
 
 def add_folder_click(app):
     # Launch input dialog to take folder name
