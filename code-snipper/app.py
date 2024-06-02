@@ -21,7 +21,7 @@ import json
 
 from db_manager import DBManager
 from folders import FolderModel, load_folders, load_folders_ui
-from snippets import SnippetModel
+from snippets import SnippetModel, load_snippets, load_snippets_ui
 from tags import TagModel, load_tags_tree, load_tags_ui
 
 
@@ -76,18 +76,7 @@ class SnippetTool(QMainWindow):
         load_tags_ui(self)
 
         # Snippets List
-        self.snippets_widget = QWidget()
-        self.snippets_layout = QVBoxLayout(self.snippets_widget)
-        self.snippets_layout.setContentsMargins(0, 0, 0, 0)
-        self.splitter.addWidget(self.snippets_widget)
-
-        self.snippets_label = QLabel("Snippets")
-        self.snippets_label.setFixedHeight(30)
-        self.snippets_layout.addWidget(self.snippets_label)
-        self.snippets_list = QListWidget()
-        self.snippets_list.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.snippets_list.customContextMenuRequested.connect(self.show_snippet_menu)
-        self.snippets_layout.addWidget(self.snippets_list)
+        load_snippets_ui(self)
 
         # Snippet Editor
         self.snippet_editor = QTextEdit()
@@ -124,23 +113,16 @@ class SnippetTool(QMainWindow):
     #     toolbar.addAction(add_snippet_action)
     #     toolbar.addAction(delete_action)
 
-    def load_snippets(self, item):
-        folder_id = item.data(0, Qt.UserRole)
-        snippets = self.snippet_model.get_snippets(folder_id)
-        self.snippets_list.clear()
-        for snippet in snippets:
-            self.snippets_list.addItem(snippet[1])
-
     def load_initial_data(self):
         load_folders(self)
         load_tags_tree(self)
         # select current folder
         current_folder_item = self.folders_tree.currentItem()
         if current_folder_item:
-            self.load_snippets(current_folder_item)
+            load_snippets(self, current_folder_item)
         # check if folder_list is empty
         elif self.folders_tree.topLevelItemCount() != 0:
-            self.load_snippets(self.folders_tree.topLevelItem(0))
+            load_snippets(self, self.folders_tree.topLevelItem(0))
 
     # def show_folder_menu(self, position):
     #     folders.show_folder_menu(self.folders_tree, position)

@@ -1,4 +1,3 @@
-from db_manager import DBManager
 import qtawesome as qta
 from PyQt5.QtWidgets import (
     QWidget,
@@ -7,9 +6,11 @@ from PyQt5.QtWidgets import (
     QActionGroup,
     QAction,
     QToolBar,
-    QListWidget
+    QListWidget,
 )
 from PyQt5.QtCore import Qt
+
+from db_manager import DBManager
 
 
 class TagModel:
@@ -30,7 +31,7 @@ class TagModel:
     def update_tag(self, tag_id, name):
         with self.db_manager.connection:
             self.db_manager.connection.execute(
-                "UPDATE tags SET name = ? WHERE id = ?", (name, tag_id)
+                "UPDATE tags SET name = ?, updated_ts = CURRENT_TIMESTAMP WHERE id = ?", (name, tag_id)
             )
 
     def delete_tag(self, tag_id):
@@ -66,7 +67,7 @@ def load_tags_ui(app):
     app.tags_header_layout = QHBoxLayout(app.tags_header_widget)
     app.tags_label = QLabel("Tags")
     app.tags_header_layout.addWidget(app.tags_label)
-    app.tags_header_layout.setContentsMargins(0, 0, 0, 0)
+    app.tags_header_layout.setContentsMargins(5, 0, 0, 0)
 
     # add_folder_action = QAction(qta.icon("mdi.plus", color=app.theme["colors"]["button"]["foreground"]), "Add Folder", app)
     # edit_folder_action = QAction(qta.icon("mdi.pencil", color=app.theme["colors"]["button"]["foreground"]), "Edit Folder", app)
@@ -77,7 +78,7 @@ def load_tags_ui(app):
     # app.tags_header_layout.addWidget(tags_header_action_group)
 
     app.sidebar_layout.addWidget(app.tags_header_widget)
-    
+
     app.tags_tree = QListWidget()
     app.tags_tree.setContextMenuPolicy(Qt.CustomContextMenu)
     # app.tags_tree.customContextMenuRequested.connect(app.show_tag_menu)

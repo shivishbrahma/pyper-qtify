@@ -33,7 +33,7 @@ class FolderModel:
     def update_folder(self, folder_id, name):
         with self.db_manager.connection:
             self.db_manager.connection.execute(
-                "UPDATE folders SET name = ? WHERE id = ?", (name, folder_id)
+                "UPDATE folders SET name = ?, updated_ts = CURRENT_TIMESTAMP WHERE id = ?", (name, folder_id)
             )
 
     def delete_folder(self, folder_id):
@@ -63,7 +63,7 @@ def load_folders_ui(app):
     app.folders_label = QLabel("Folders")
     app.folders_label.setFixedHeight(30)
     app.folders_header_layout.addWidget(app.folders_label)
-    app.folders_header_layout.setContentsMargins(0, 0, 0, 0)
+    app.folders_header_layout.setContentsMargins(5, 0, 0, 0)
 
     add_folder_action = QAction(
         qta.icon(
