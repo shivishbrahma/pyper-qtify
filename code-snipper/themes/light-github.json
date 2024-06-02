@@ -46,7 +46,7 @@
     },
     "styles": {
         "headerLabel": {
-            "fontSize": "24px",
+            "fontSize": "18px",
             "fontWeight": "bold"
         },
         "defaultText": {

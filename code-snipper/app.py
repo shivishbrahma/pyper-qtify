@@ -154,13 +154,20 @@ class SnippetTool(QMainWindow):
     def apply_theme(self):
         # set background color
         self.setStyleSheet(
-            f"background-color: {self.theme['colors']['background']}; color: {self.theme['colors']['text']};"
+            f"background-color: {self.theme['colors']['background']}; color: {self.theme['colors']['text']}; font-size: {self.theme['styles']['defaultText']['fontSize']};"
         )
 
         # Apply header styles
-        self.tags_label.setStyleSheet(
-            f"color: {self.theme['colors']['header']['foreground']};"
-        )
+        header_labels = [
+            self.folders_label,
+            self.tags_label,
+            self.snippets_label,
+        ]
+
+        for label in header_labels:
+            label.setStyleSheet(
+                f"font-size: {self.theme['styles']['headerLabel']['fontSize']};color: {self.theme['colors']['header']['foreground']};"
+            )
         # self.header_toolbar.setStyleSheet(f"background-color: {self.theme['colors']['header']['background']}; border: 1px solid {self.theme['colors']['header']['border']};")
 
     def closeEvent(self, event):

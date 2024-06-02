@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QInputDialog,
     QMessageBox,
+    QMenu
 )
 from PyQt5.QtCore import Qt
 import qtawesome as qta
@@ -53,6 +54,9 @@ def load_folders(app):
 
 
 def load_folders_ui(app):
+    """
+    Load Folder Tree
+    """
     app.folders_header_widget = QWidget()
     app.folders_header_widget.setFixedHeight(30)
     app.folders_header_layout = QHBoxLayout(app.folders_header_widget)
@@ -106,9 +110,27 @@ def load_folders_ui(app):
     app.folders_tree = QTreeWidget()
     app.folders_tree.setContextMenuPolicy(Qt.CustomContextMenu)
     app.folders_tree.setHeaderHidden(True)
-    # app.folders_tree.customContextMenuRequested.connect(app.show_folder_menu)
+    app.folders_tree.customContextMenuRequested.connect(lambda: show_folder_menu(app))
     app.sidebar_layout.addWidget(app.folders_tree)
 
+
+def show_folder_menu(app):
+    # Create a context menu
+    menu = QMenu(app)
+
+    # Add actions to the menu
+    add_folder_action = menu.addAction("Add Folder")
+    edit_folder_action = menu.addAction("Edit Folder")
+    delete_folder_action = menu.addAction("Delete Folder")
+
+    # Show the menu
+    action = menu.exec_(app.folders_tree.viewport().mapToGlobal(app.folders_tree.pos()))
+    if action == add_folder_action:
+        add_folder_click(app)
+    if action == edit_folder_action:
+        edit_folder_click(app)
+    if action == delete_folder_action:
+        delete_folder_click(app)
 
 def add_folder_click(app):
     # Launch input dialog to take folder name
