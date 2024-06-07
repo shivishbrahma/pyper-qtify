@@ -10,17 +10,14 @@ from sqlalchemy import (
     create_engine,
 )
 import sqlalchemy.engine.url as url
-from sqlalchemy.orm import (
-    DeclarativeBase,
-    mapped_column,
-    relationship,
-    sessionmaker
-)
+from sqlalchemy.sql import func
+from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, sessionmaker
 
 
 class Base(DeclarativeBase):
-    created_ts = Column(TIMESTAMP, nullable=False, server_default="CURRENT_TIMESTAMP")
-    updated_ts = Column(TIMESTAMP, nullable=False, server_default="CURRENT_TIMESTAMP")
+    id = Column(Integer, primary_key=True)
+    created_ts = Column(TIMESTAMP, nullable=False, server_default=func.now())
+    updated_ts = Column(TIMESTAMP, nullable=False, server_default=func.now())
 
 
 # Association table for many-to-many relationship between snippets and tags
@@ -34,7 +31,6 @@ snippet_tag_table = Table(
 
 class Folder(Base):
     __tablename__ = "folders"
-    id = Column(Integer, primary_key=True)
     name = Column(String(255))
 
     snippets = relationship("Snippet", back_populates="folder")
@@ -45,7 +41,6 @@ class Folder(Base):
 
 class Tag(Base):
     __tablename__ = "tags"
-    id = Column(Integer, primary_key=True)
     name = Column(String(255))
 
     def __repr__(self):
@@ -54,7 +49,6 @@ class Tag(Base):
 
 class Snippet(Base):
     __tablename__ = "snippets"
-    id = Column(Integer, primary_key=True)
     name = Column(String(255))
     folder_id = Column(Integer, ForeignKey("folders.id"))
     folder = relationship("Folder", back_populates="snippets")
@@ -65,10 +59,10 @@ class Snippet(Base):
 
 class Fragment(Base):
     __tablename__ = "fragments"
-    id = Column(Integer, primary_key=True)
     content = Column(Text)
     language = Column(String(127))
     snippet_id = Column(Integer, ForeignKey("snippets.id"))
+    # snippet = relationship("Snippet", back_populates="fragments")
 
     def __repr__(self):
         return f"Fragment(id={self.id!r}, content={self.content!r})"

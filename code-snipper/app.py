@@ -22,7 +22,7 @@ import json
 
 from db_manager import DBManager
 from folders import FolderModel, load_folders, load_folders_ui
-from snippets import SnippetModel, load_snippets, load_snippets_ui
+from snippets import SnippetModel, load_snippets, load_snippets_ui, load_snippet_editor
 from tags import TagModel, load_tags_tree, load_tags_ui
 
 
@@ -39,7 +39,7 @@ class SnippetTool(QMainWindow):
         self.__name = "Code Snipper"
         self.__left = 100
         self.__top = 100
-        self.__width = 960
+        self.__width = 1024
         self.__height = 720
 
         self.load_theme("light-github")
@@ -82,8 +82,7 @@ class SnippetTool(QMainWindow):
         load_snippets_ui(self)
 
         # Snippet Editor
-        self.snippet_editor = QTextEdit()
-        self.splitter.addWidget(self.snippet_editor)
+        load_snippet_editor(self)
 
         # Set splitter sizes (1:1:2)
         self.splitter.setStretchFactor(0, 1)  # Sidebar (folders and tags)
@@ -96,25 +95,8 @@ class SnippetTool(QMainWindow):
         # Apply theme
         self.apply_theme()
 
-    # def create_toolbar(self):
-    #     toolbar = QToolBar("CRUD Actions")
-    #     self.addToolBar(toolbar)
-
-    #     # Create actions with qtawesome icons
-    #     add_folder_action = QAction(
-    #         qta.icon("mdi.plus", color="green"), "Add Folder", self
-    #     )
-    #     add_tag_action = QAction(qta.icon("fa.plus", color="blue"), "Add Tag", self)
-    #     add_snippet_action = QAction(
-    #         qta.icon("fa.plus", color="purple"), "Add Snippet", self
-    #     )
-    #     delete_action = QAction(qta.icon("fa.trash", color="red"), "Delete", self)
-
-    #     # Add actions to the toolbar
-    #     toolbar.addAction(add_folder_action)
-    #     toolbar.addAction(add_tag_action)
-    #     toolbar.addAction(add_snippet_action)
-    #     toolbar.addAction(delete_action)
+    def create_menubar(self):
+        pass
 
     def load_initial_data(self):
         load_folders(self)
@@ -154,6 +136,41 @@ class SnippetTool(QMainWindow):
                 f"font-size: {self.theme['styles']['headerLabel']['fontSize']};color: {self.theme['colors']['header']['foreground']};"
             )
         # self.header_toolbar.setStyleSheet(f"background-color: {self.theme['colors']['header']['background']}; border: 1px solid {self.theme['colors']['header']['border']};")
+
+        text_inputs = [
+            self.snippet_title_input,
+            self.snippet_tags_input,
+            self.snippet_editor_input,
+        ]
+
+        input_style = "background-color: {}; color: {}; font-size: {};border: {};"
+        for input in text_inputs:
+            input.setStyleSheet(
+                input_style.format(
+                    self.theme["colors"]["editor"]["background"],
+                    self.theme["colors"]["editor"]["foreground"],
+                    "20px" if input == self.snippet_title_input else "15px",
+                    "1px solid transparent",
+                )
+            )
+
+            # Style title input: show border on focus and remove on blur
+            input.focusInEvent = lambda event, input=input: input.setStyleSheet(
+                input_style.format(
+                    self.theme["colors"]["editor"]["background"],
+                    self.theme["colors"]["editor"]["foreground"],
+                    "20px" if input == self.snippet_title_input else "15px",
+                    "1px solid #000000",
+                )
+            )
+            input.focusOutEvent = lambda event, input=input: input.setStyleSheet(
+                input_style.format(
+                    self.theme["colors"]["editor"]["background"],
+                    self.theme["colors"]["editor"]["foreground"],
+                    "20px" if input == self.snippet_title_input else "15px",
+                    "1px solid transparent",
+                )
+            )
 
     def closeEvent(self, event):
         self.db_manager.close()

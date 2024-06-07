@@ -62,6 +62,7 @@ def load_folders_ui(app):
     app.folders_header_layout.addWidget(app.folders_label)
     app.folders_header_layout.setContentsMargins(5, 0, 0, 0)
 
+    # Folder Actions
     add_folder_action = QAction(
         qta.icon(
             "mdi.plus",
@@ -90,17 +91,18 @@ def load_folders_ui(app):
         app,
     )
 
-    # Set Actions for click
+    # Set Event for click
     add_folder_action.triggered.connect(lambda: add_folder_click(app))
     edit_folder_action.triggered.connect(lambda: edit_folder_click(app))
     delete_folder_action.triggered.connect(lambda: delete_folder_click(app))
 
-    folders_header_toolbar = QToolBar(app)
-    folders_header_toolbar.addAction(add_folder_action)
-    folders_header_toolbar.addAction(edit_folder_action)
-    folders_header_toolbar.addAction(delete_folder_action)
-    folders_header_toolbar.setContentsMargins(0, 0, 0, 0)
-    app.folders_header_layout.addWidget(folders_header_toolbar)
+    # Folder Toolbar
+    folders_toolbar = QToolBar(app)
+    folders_toolbar.addAction(add_folder_action)
+    folders_toolbar.addAction(edit_folder_action)
+    folders_toolbar.addAction(delete_folder_action)
+    folders_toolbar.setContentsMargins(0, 0, 0, 0)
+    app.folders_header_layout.addWidget(folders_toolbar, 0, Qt.AlignRight)
 
     app.sidebar_layout.addWidget(app.folders_header_widget)
 
@@ -143,12 +145,12 @@ def add_folder_click(app):
 
 
 def edit_folder_click(app):
-    # Get selected folder
-    selected_item = app.folders_tree.currentItem()
-
-    if not selected_item:
+    if len(app.folders_tree.selectedItems()) == 0:
         QMessageBox.warning(app, "Edit Folder", "Please select a folder to edit.")
         return
+
+    # Get selected folder
+    selected_item = app.folders_tree.selectedItems()[0]
 
     # Get folder id
     folder_id = selected_item.data(0, Qt.UserRole)
@@ -168,13 +170,13 @@ def edit_folder_click(app):
 
 
 def delete_folder_click(app):
-    # Get selected folder
-    selected_item = app.folders_tree.currentItem()
-
-    if not selected_item:
+    if len(app.folders_tree.selectedItems()) == 0:
         # Prompt to select a folder
         QMessageBox.warning(app, "Delete Folder", "Please select a folder to delete.")
         return
+
+    # Get selected folder
+    selected_item = app.folders_tree.selectedItems()[0]
 
     # Get folder id
     folder_id = selected_item.data(0, Qt.UserRole)

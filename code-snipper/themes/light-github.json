@@ -46,11 +46,11 @@
     },
     "styles": {
         "headerLabel": {
-            "fontSize": "18px",
+            "fontSize": "20px",
             "fontWeight": "bold"
         },
         "defaultText": {
-            "fontSize": "14px"
+            "fontSize": "16px"
         },
         "button": {
             "fontSize": "14px",
