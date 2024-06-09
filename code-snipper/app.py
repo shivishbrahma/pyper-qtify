@@ -105,9 +105,11 @@ class SnippetTool(QMainWindow):
         current_folder_item = self.folders_tree.currentItem()
         if current_folder_item:
             load_snippets(self, current_folder_item)
-        # check if folder_list is empty
+            self.folders_tree.setCurrentItem(current_folder_item)
+        # check if folder_list is not empty
         elif self.folders_tree.topLevelItemCount() != 0:
             load_snippets(self, self.folders_tree.topLevelItem(0))
+            self.folders_tree.setCurrentItem(self.folders_tree.topLevelItem(0))
 
     # def show_folder_menu(self, position):
     #     folders.show_folder_menu(self.folders_tree, position)
@@ -138,9 +140,9 @@ class SnippetTool(QMainWindow):
         # self.header_toolbar.setStyleSheet(f"background-color: {self.theme['colors']['header']['background']}; border: 1px solid {self.theme['colors']['header']['border']};")
 
         text_inputs = [
-            self.snippet_title_input,
-            self.snippet_tags_input,
-            self.snippet_editor_input,
+            self.snippet_editor_widget.header.title_edit,
+            self.snippet_editor_widget.header.tags_edit,
+            self.snippet_editor_widget.body.content_edit,
         ]
 
         input_style = "background-color: {}; color: {}; font-size: {};border: {};"
@@ -149,7 +151,7 @@ class SnippetTool(QMainWindow):
                 input_style.format(
                     self.theme["colors"]["editor"]["background"],
                     self.theme["colors"]["editor"]["foreground"],
-                    "20px" if input == self.snippet_title_input else "15px",
+                    "20px" if input == self.snippet_editor_widget.header.title_edit else "15px",
                     "1px solid transparent",
                 )
             )
@@ -159,7 +161,7 @@ class SnippetTool(QMainWindow):
                 input_style.format(
                     self.theme["colors"]["editor"]["background"],
                     self.theme["colors"]["editor"]["foreground"],
-                    "20px" if input == self.snippet_title_input else "15px",
+                    "20px" if input == self.snippet_editor_widget.header.title_edit else "15px",
                     "1px solid #000000",
                 )
             )
@@ -167,7 +169,7 @@ class SnippetTool(QMainWindow):
                 input_style.format(
                     self.theme["colors"]["editor"]["background"],
                     self.theme["colors"]["editor"]["foreground"],
-                    "20px" if input == self.snippet_title_input else "15px",
+                    "20px" if input == self.snippet_editor_widget.header.title_edit else "15px",
                     "1px solid transparent",
                 )
             )

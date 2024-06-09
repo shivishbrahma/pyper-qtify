@@ -53,6 +53,9 @@ class Snippet(Base):
     folder_id = Column(Integer, ForeignKey("folders.id"))
     folder = relationship("Folder", back_populates="snippets")
 
+    fragments = relationship("Fragment", back_populates="snippet")
+    # tags = relationship("Tag", secondary=snippet_tag_table, back_populates="snippets")
+
     def __repr__(self):
         return f"Snippet(id={self.id!r}, name={self.name!r})"
 
@@ -62,7 +65,7 @@ class Fragment(Base):
     content = Column(Text)
     language = Column(String(127))
     snippet_id = Column(Integer, ForeignKey("snippets.id"))
-    # snippet = relationship("Snippet", back_populates="fragments")
+    snippet = relationship("Snippet", back_populates="fragments")
 
     def __repr__(self):
         return f"Fragment(id={self.id!r}, content={self.content!r})"
