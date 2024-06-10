@@ -111,6 +111,10 @@ class SnippetTool(QMainWindow):
             load_snippets(self, self.folders_tree.topLevelItem(0))
             self.folders_tree.setCurrentItem(self.folders_tree.topLevelItem(0))
 
+        self.folders_tree.currentItemChanged.connect(
+            lambda: load_snippets(self, self.folders_tree.currentItem())
+        )
+
     # def show_folder_menu(self, position):
     #     folders.show_folder_menu(self.folders_tree, position)
 

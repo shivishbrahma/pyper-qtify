@@ -199,6 +199,7 @@ class SnippetEditorFooter(QWidget):
             "kotlin",
             "lua",
             "php",
+            "ps1",
             "py",
             "rb",
             "sql",
@@ -240,6 +241,9 @@ class SnippetEditorFooter(QWidget):
 
 
 def load_snippets(app, item):
+    if item is None:
+        return
+    
     folder_id = item.data(0, Qt.UserRole)
     snippets = app.snippet_model.get_snippets(folder_id)
     app.snippets_list.clear()
@@ -247,6 +251,8 @@ def load_snippets(app, item):
         snippet_list_item = QListWidgetItem(app.snippets_list)
         snippet_list_item.setText(snippet.name)
         snippet_list_item.setData(Qt.UserRole, snippet.id)
+
+    clear_snippet_editor(app)
 
 
 def load_snippets_ui(app):
@@ -382,7 +388,7 @@ def update_snippet(app, snippet_id):
     QMessageBox.information(
         app, "Update Snippet", "Snippet has been updated successfully."
     )
-    
+
     load_snippets(app, app.folders_tree.selectedItems()[0])
 
 

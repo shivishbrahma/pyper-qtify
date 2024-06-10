@@ -139,6 +139,8 @@ def add_folder_click(app):
     if ok and folder_name and folder_name.strip() != "":
         app.folder_model.create_folder(folder_name)
         load_folders(app)
+        # Select the last added folder
+        app.folders_tree.setCurrentItem(app.folders_tree.topLevelItem(app.folders_tree.topLevelItemCount() - 1))
     else:
         # Prompt to enter folder name
         QMessageBox.warning(app, "Add Folder", "Please enter a folder name.")
