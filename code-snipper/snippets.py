@@ -108,6 +108,24 @@ class SnippetEditor(QWidget):
         return self.footer.language()
 
 
+class TagsEdit(QWidget):
+    def __init__(self, tags=[]):
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+
+        self.tags_list = QListWidget()
+        self.layout.addWidget(self.tags_list)
+
+        self.__tags = tags
+
+    def set_tags(self, tags):
+        self.__tags = tags
+    
+    def tags(self):
+        return self.__tags
+
+
 class SnippetEditorHeader(QWidget):
     def __init__(self, app, snippet_id=-1):
         super().__init__(parent=app)
@@ -243,7 +261,7 @@ class SnippetEditorFooter(QWidget):
 def load_snippets(app, item):
     if item is None:
         return
-    
+
     folder_id = item.data(0, Qt.UserRole)
     snippets = app.snippet_model.get_snippets(folder_id)
     app.snippets_list.clear()
@@ -358,9 +376,7 @@ def add_snippet(app):
     )
 
     # Info prompt add message
-    QMessageBox.information(
-        app, "Add Snippet", "Snippet has been added successfully."
-    )
+    QMessageBox.information(app, "Add Snippet", "Snippet has been added successfully.")
 
     clear_snippet_editor(app)
     load_snippets(app, app.folders_tree.selectedItems()[0])
