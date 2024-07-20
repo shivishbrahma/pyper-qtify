@@ -27,11 +27,11 @@ class OnubadApp(QWidget):
     def initUI(self):
         # Create widgets
         self.inputText = QTextEdit(self)
-        self.inputText.setFont(QFont("Nirmala UI", 10))
+        self.inputText.setFont(QFont("Baloo", 10))
 
         self.outputText = QTextEdit(self)
         self.outputText.setReadOnly(True)
-        self.outputText.setFont(QFont("Nirmala UI", 10))
+        self.outputText.setFont(QFont("Baloo", 10))
         # On Click - Copy Its Contents to Clipboard
         self.outputText.copyAvailable.connect(self.copyText)
 
